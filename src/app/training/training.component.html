@@ -1,0 +1,18 @@
+<div class="row">
+    <label>
+        Training text
+        <textarea class="form-control" [(ngModel)]="trainingText"></textarea>
+    </label>
+</div>
+<app-key-value-labels [labels]="labels"></app-key-value-labels>
+<div class="row">
+    <p>{{trainingOutput?.result}}</p>
+    <p>{{trainingOutput?.annotations.length}}</p>
+    <p>{{trainingOutput?.modelId}}</p>
+</div>
+<div class="row">
+    <button class="btn btn-primary" (click)="trainModel()">Train</button>
+</div>
+<div class="row">
+    <button class="btn btn-primary" (click)="addLabel()">Add label</button>
+</div>
