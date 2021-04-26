@@ -1,0 +1,7 @@
+<app-key-value-pair
+        *ngFor="let item of labels | keyvalue"
+        [annotation]="item.value"
+        [annotationIndex]="+item.key"
+        (popAnnotation)="removeAnnotationAt($event)"
+        (annotationChanged)="updateAnnotation($event)">
+</app-key-value-pair>

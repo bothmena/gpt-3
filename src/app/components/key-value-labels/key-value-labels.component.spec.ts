@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KeyValueLabelsComponent } from './key-value-labels.component';
+import { KeyValueLabelsComponent } from 'src/app/components/key-value-labels/key-value-labels.component';
 
 describe('KeyValueLabelsComponent', () => {
   let component: KeyValueLabelsComponent;

@@ -1,4 +1,38 @@
 <div class="container">
-    <app-training></app-training>
-    <app-prediction></app-prediction>
+    <div class="row">
+        <div class="col-12">
+            <h3 class="text-center">Welcome to GPT-3 Client.</h3>
+            <p class="text-center">here is a paragraph to describe what't GPT-3 and how to use our client...</p>
+        </div>
+        <div class="col-12 mt-3 d-flex justify-content-center">
+            <div class="custom-control custom-radio custom-control-inline">
+                <input
+                        type="radio"
+                        id="customRadioInline1"
+                        [checked]="isTrainingMode"
+                        (change)="toggleTrainingMode()"
+                        name="customRadioInline1"
+                        class="custom-control-input">
+                <label class="custom-control-label" for="customRadioInline1">Training Mode</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+                <input
+                        type="radio"
+                        id="customRadioInline2"
+                        [checked]="!isTrainingMode"
+                        (change)="toggleTrainingMode()"
+                        name="customRadioInline1"
+                        class="custom-control-input">
+                <label class="custom-control-label" for="customRadioInline2">Inference Mode</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-6">
+            <app-training [isTrainingMode]="isTrainingMode"></app-training>
+        </div>
+        <div class="col-6">
+            <app-inference-results></app-inference-results>
+        </div>
+    </div>
 </div>

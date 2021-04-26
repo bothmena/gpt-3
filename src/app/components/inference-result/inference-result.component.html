@@ -1,0 +1,33 @@
+<div class="card">
+    <div class="card-header pointer" id="heading{{index}}" (click)="onExpandedSampleIndexChange()">
+        <h5 class="mb-0">
+            Training Sample #{{index}}
+        </h5>
+    </div>
+
+    <div id="collapse{{index}}"
+         class="collapse"
+         [class.show]="expandedSampleIndex === index"
+         [attr.aria-labelledby]="'heading' + index"
+         data-parent="#accordion">
+        <div class="card-body">
+            {{ sample.text }}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Key</th>
+                    <th scope="col">Label</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let annotation of sample.annotations; let i = index">
+                    <th scope="row">{{i + 1}}</th>
+                    <td>{{annotation.key}}</td>
+                    <td>{{annotation.label}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

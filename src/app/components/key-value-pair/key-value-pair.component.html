@@ -1,0 +1,19 @@
+<div class="form-inline d-flex justify-content-between">
+    <input
+            type="text"
+            class="form-control mb-2 mr-sm-2"
+            [(ngModel)]="annotation.key"
+            (change)="annotationUpdated()"
+            placeholder="Key">
+    <input
+            type="text"
+            [(ngModel)]="annotation.label"
+            (change)="annotationUpdated()"
+            class="form-control mb-2 mr-sm-2"
+            placeholder="Label">
+    <button
+            type="button"
+            class="btn btn-primary mb-2"
+            (click)="removeElement()"
+    >X</button>
+</div>

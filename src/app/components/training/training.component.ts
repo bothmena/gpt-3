@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Annotation } from 'src/app/models';
-import { KEY_VALUE_SEPARATOR, EMPTY_ANNOTATION, SEPARATOR_LIST, ANNOTATION_SEPARATOR } from 'src/app/constant';
+import { ANNOTATION_SEPARATOR, EMPTY_ANNOTATION, KEY_VALUE_SEPARATOR, SEPARATOR_LIST } from 'src/app/constant';
 import { OpenaiService } from 'src/app/openai.service';
-import { catchError } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
 
 @Component({
     selector: 'app-training',
@@ -12,18 +10,21 @@ import { Observable, of } from 'rxjs';
 })
 export class TrainingComponent implements OnInit {
 
-    trainingText = 'Lenovo IdeaPad 100-15IBD 80QQ002DUS 15.6"" 16:9 Notebook - Intel Core i3 (5th Gen) i3-5020U Dual-core (2 Core) 2.20 GHz';
-    labels: Array<Annotation> = [
-        {
+    @Input() isTrainingMode: boolean;
+    text = 'Lenovo IdeaPad 100-15IBD 80QQ002DUS 15.6"" 16:9 Notebook - Intel Core i3 (5th Gen) i3-5020U ' +
+        'Dual-core (2 Core) 2.20 GHz';
+    labels: { [p: number]: Annotation } = {
+        0: {
             key: 'Screen Size',
             label: '15.6',
         },
-        {
+        1: {
             key: 'Brand',
             label: 'Lenovo',
         },
-        EMPTY_ANNOTATION,
-    ];
+        2: EMPTY_ANNOTATION,
+    };
+    lastIndex = 2;
     trainingOutput: {
         result: string;
         annotations: Array<Annotation>;
@@ -34,17 +35,18 @@ export class TrainingComponent implements OnInit {
     }
 
     get trainingData(): string {
-        return this.trainingText + '\n Predictions:' + this.annotations + SEPARATOR_LIST[0]
-            + 'Dell Inspiron 15 5000 i5567 15.6"" Laptop, Touchscreen, Windows 10 Home, Intel Core i7-7500U Processor, 16GB RAM, 1TB Hard Drive\nPredictions:';
+        return this.text + '\n Predictions:' + this.annotations + SEPARATOR_LIST[0]
+            + 'Dell Inspiron 15 5000 i5567 15.6"" Laptop, Touchscreen, Windows 10 Home, Intel Core i7-7500U Processor, ' +
+            '16GB RAM, 1TB Hard Drive\nPredictions:';
     }
 
     get annotations(): string {
-        let labels = [...this.labels];
+        let labels = Object.values(this.labels);
         labels = labels.filter(label => label.label.length && label.key.length);
         let text = '';
         labels.forEach(label => text = text + ANNOTATION_SEPARATOR + label.key + KEY_VALUE_SEPARATOR + label.label);
 
-        return text.substring(1); // labels.join(ANNOTATION_SEPARATOR);
+        return text.substring(1);
     }
 
     ngOnInit() {
@@ -63,7 +65,19 @@ export class TrainingComponent implements OnInit {
         );
     }
 
+    inferModel(): void {
+
+    }
+
+    saveTrainingSample(): void {
+
+    }
+
     addLabel() {
-        this.labels.push(EMPTY_ANNOTATION);
+        this.labels[++this.lastIndex] = EMPTY_ANNOTATION;
+    }
+
+    onLabelsChanged(labels: { [p: number]: Annotation }) {
+        this.labels = { ...labels };
     }
 }

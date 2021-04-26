@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PredictionComponent } from './prediction.component';
+import { KeyValuePairComponent } from 'src/app/components/key-value-pair/key-value-pair.component';
 
-describe('PredictionComponent', () => {
-  let component: PredictionComponent;
-  let fixture: ComponentFixture<PredictionComponent>;
+describe('KeyValuePairComponent', () => {
+  let component: KeyValuePairComponent;
+  let fixture: ComponentFixture<KeyValuePairComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PredictionComponent ]
+      declarations: [ KeyValuePairComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PredictionComponent);
+    fixture = TestBed.createComponent(KeyValuePairComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

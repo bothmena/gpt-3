@@ -1,0 +1,57 @@
+<div class="row">
+    <div class="col">
+        <label for="trainingText">Training text {{isTrainingMode}}</label>
+        <textarea
+                class="form-control"
+                id="trainingText"
+                rows="5"
+                [(ngModel)]="text">
+        </textarea>
+    </div>
+</div>
+
+<ng-container *ngIf="isTrainingMode">
+    <div class="row mt-2">
+        <div class="col">
+            <label>Annotations</label>
+        </div>
+    </div>
+    <app-key-value-labels
+            [labels]="labels"
+            (labelsChanged)="onLabelsChanged($event)"
+    >
+    </app-key-value-labels>
+    <div class="row">
+        <div class="col d-flex justify-content-end mt-2">
+            <button class="btn btn-primary" (click)="addLabel()">Add label</button>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-6">
+            <button
+                    (click)="saveTrainingSample()"
+                    type="button"
+                    class="btn btn-secondary btn-block"
+            >Save</button>
+        </div>
+        <div class="col-6">
+            <button
+                    (click)="trainModel()"
+                    type="button"
+                    class="btn btn-primary btn-block"
+            >Train</button>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="!isTrainingMode">
+    <div class="row mt-3">
+        <div class="offset-md-6 col-md-6 d-flex justify-content-center">
+            <button
+                    (click)="inferModel()"
+                    type="button"
+                    class="btn btn-primary btn-block"
+            >Predict</button>
+        </div>
+    </div>
+</ng-container>

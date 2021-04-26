@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col">
+        <label>Training samples</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div id="accordion">
+            <app-inference-result
+                    *ngFor="let sample of trainingSamples; let i = index"
+                    [sample]="sample"
+                    [index]="i"
+                    [expandedSampleIndex]="expandedSampleIndex"
+                    (expandedElementIndexChange)="expandedSampleIndex = $event"
+            >
+            </app-inference-result>
+        </div>
+    </div>
+</div>
