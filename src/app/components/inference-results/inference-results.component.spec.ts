@@ -1,8 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InferenceResultsComponent } from 'src/app/components/inference-results/prediction.component';
+import { InferenceResultsComponent } from 'src/app/components/inference-results/inference-results.component';
 
-describe('PredictionComponent', () => {
+describe('InferenceResultsComponent', () => {
     let component: InferenceResultsComponent;
     let fixture: ComponentFixture<InferenceResultsComponent>;
 

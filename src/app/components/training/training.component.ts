@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Annotation } from 'src/app/models';
-import { ANNOTATION_SEPARATOR, EMPTY_ANNOTATION, KEY_VALUE_SEPARATOR, SEPARATOR_LIST } from 'src/app/constant';
-import { OpenaiService } from 'src/app/openai.service';
+import { Annotation, TrainingSample } from 'src/app/models';
+import { ANNOTATION_SEPARATOR, EMPTY_ANNOTATION, KEY_VALUE_SEPARATOR, STOP_LIST, TRAIN_LABEL_SEP } from 'src/app/constant';
+import { OpenaiService } from 'src/app/services/openai.service';
+import { LocalStorageService } from 'src/app/services/local-storage.service';
 
 @Component({
     selector: 'app-training',
@@ -11,66 +12,78 @@ import { OpenaiService } from 'src/app/openai.service';
 export class TrainingComponent implements OnInit {
 
     @Input() isTrainingMode: boolean;
-    text = 'Lenovo IdeaPad 100-15IBD 80QQ002DUS 15.6"" 16:9 Notebook - Intel Core i3 (5th Gen) i3-5020U ' +
-        'Dual-core (2 Core) 2.20 GHz';
-    labels: { [p: number]: Annotation } = {
-        0: {
-            key: 'Screen Size',
-            label: '15.6',
-        },
-        1: {
-            key: 'Brand',
-            label: 'Lenovo',
-        },
-        2: EMPTY_ANNOTATION,
-    };
-    lastIndex = 2;
-    trainingOutput: {
-        result: string;
-        annotations: Array<Annotation>;
-        modelId: string;
-    };
+    lastTrainingSampleAsString: string | undefined;
+    inferenceResults: Annotation[] = [];
 
-    constructor(private openAIService: OpenaiService) {
+    text = '';
+    labels: { [p: number]: Annotation } = {};
+    lastIndex = 0;
+
+    constructor(private openAIService: OpenaiService, private localStorageService: LocalStorageService) {
     }
 
-    get trainingData(): string {
-        return this.text + '\n Predictions:' + this.annotations + SEPARATOR_LIST[0]
-            + 'Dell Inspiron 15 5000 i5567 15.6"" Laptop, Touchscreen, Windows 10 Home, Intel Core i7-7500U Processor, ' +
-            '16GB RAM, 1TB Hard Drive\nPredictions:';
+    get validAnnotations(): string {
+        const labelsAsText: string = Object.values(this.labels)
+            .filter(annotation => annotation.key.length && annotation.label.length)
+            .reduce((acc: string, label: Annotation) => {
+                return acc + ANNOTATION_SEPARATOR + label.key + KEY_VALUE_SEPARATOR + label.label;
+            }, '');
+
+        return labelsAsText.substring(1);
     }
 
-    get annotations(): string {
-        let labels = Object.values(this.labels);
-        labels = labels.filter(label => label.label.length && label.key.length);
-        let text = '';
-        labels.forEach(label => text = text + ANNOTATION_SEPARATOR + label.key + KEY_VALUE_SEPARATOR + label.label);
+    stringifyTrainingSample(trainingSample: TrainingSample): string {
+        return trainingSample.text + TRAIN_LABEL_SEP + this.stringifyAnnotations(trainingSample.annotations) + STOP_LIST[0];
+    }
 
-        return text.substring(1);
+    stringifyAnnotations(annotations: Array<Annotation>): string {
+        return annotations.reduce((acc: string, annotation: Annotation) => {
+            return acc + ANNOTATION_SEPARATOR + annotation.key + KEY_VALUE_SEPARATOR + annotation.label;
+        }, '').substring(1);
     }
 
     ngOnInit() {
+        const savedTrainingSampleCount = Object.keys(this.localStorageService.trainingSamples).length;
+        if (savedTrainingSampleCount) {
+            const trainingSample = this.localStorageService.trainingSamples[savedTrainingSampleCount - 1];
+            this.lastTrainingSampleAsString = trainingSample.text + TRAIN_LABEL_SEP
+                + this.stringifyAnnotations(trainingSample.annotations) + STOP_LIST[0];
+        }
     }
 
     trainModel(): void {
-        this.openAIService.train(this.trainingData).subscribe(
-            ({ modelId, annotations }: { modelId: string, annotations: Array<Annotation> }) => {
-                this.trainingOutput = {
-                    result: 'Success',
-                    annotations,
-                    modelId,
-                };
-            },
+        if (!this.lastTrainingSampleAsString) {
+            return;
+        }
+        const trainingData = this.lastTrainingSampleAsString + this.text;
+        this.openAIService.train(trainingData).subscribe(
+            ({ annotations }: { modelId: string, annotations: Array<Annotation> }) => this.labels = annotations
+                .reduce((acc: {[n: number]: Annotation}, annotation: Annotation, index: number) => ({...acc, [index]: annotation}), {}),
             (error) => console.log(error),
         );
     }
 
     inferModel(): void {
-
+        let trainingData = Object.values(this.localStorageService.trainingSamples)
+            .reduce((acc: string, trainingSample: TrainingSample) => acc + this.stringifyTrainingSample(trainingSample), '');
+        trainingData += this.text;
+        this.openAIService.train(trainingData).subscribe(
+            ({ annotations }: { modelId: string, annotations: Array<Annotation> }) => this.inferenceResults = annotations,
+            (error) => console.log(error),
+        );
     }
 
     saveTrainingSample(): void {
-
+        const validAnnotations: Array<Annotation> = this.getValidAnnotations();
+        if (this.text.length && validAnnotations.length) {
+            this.localStorageService.saveTrainingSample({
+                text: this.text,
+                annotations: validAnnotations,
+            });
+            this.updateLastTrainingSample();
+            this.text = '';
+            this.labels = { 0: EMPTY_ANNOTATION };
+        }
     }
 
     addLabel() {
@@ -79,5 +92,14 @@ export class TrainingComponent implements OnInit {
 
     onLabelsChanged(labels: { [p: number]: Annotation }) {
         this.labels = { ...labels };
+    }
+
+    private getValidAnnotations(): Array<Annotation> {
+        return Object.values(this.labels)
+            .filter(annotation => annotation.key.length && annotation.label.length);
+    }
+
+    private updateLastTrainingSample(): void {
+        this.lastTrainingSampleAsString = this.text + TRAIN_LABEL_SEP + this.validAnnotations + STOP_LIST[0];
     }
 }

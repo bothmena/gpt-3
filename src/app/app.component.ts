@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LocalStorageService } from 'src/app/services/local-storage.service';
 
 @Component({
     selector: 'app-root',
@@ -7,7 +8,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
     isTrainingMode = true;
-    constructor() {
+    constructor(private localStorageService: LocalStorageService) {
     }
 
     toggleTrainingMode(): void {
