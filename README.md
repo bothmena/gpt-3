@@ -40,3 +40,9 @@ The main idea is to use GPT-3 api to be able to train a model to extract useful 
     - Insert a laptop description
     - Click on "Predict", we will use all saved training samples for prediction
     - Wait until you see a table with all the predicted laptop info.
+
+## What's not working: Tests
+
+I wanted to write tests for at least some features, but because the lack of time and given that I kept adding new features and dependencies to all components, the tests kept breaking, and it may take some time to fix all of them.
+I wrote a couple of tests for AppComponent, after fixing the already existing tests, but after adding new features to the component, the tests were no longer even working. the reason is that when for example you use a new component in
+app component, you need to also update the spec file and declare that same component or at least create a stub, so basically fixing the tests and write more tests may be an easy task, it may take a lot of time :/
