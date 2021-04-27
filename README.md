@@ -1,27 +1,42 @@
-# LevityApp
+# GPT-3 Client
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.23.
 
 ## Development server
 
+Install angular CLI: `npm install -g @angular/cli`
+
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Implementation description + bonus
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+#### Goal
 
-## Build
+The main idea is to use GPT-3 api to be able to train a model to extract useful information about laptop using just a description as a paragraph.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+#### Bonus
 
-## Running unit tests
+- Because the way GPT-3 works is a bit counter-intuitive, I decided to make few changes to improve UX:
+    - First of all, improve the UI from the point we left it at the end of the tech session.
+    - I made few changes to the original mockup, and now we have two modes:
+        - Training mode: In this mode you're basically collecting training samples and saving them to the local storage.
+        - Inference mode: In this mode you'll use all the collected training samples to extract information of an unseen laptop description.
+- Extracting information manually from paragraphs is tedious work, this is why we're using the "Active learning" (it's not actually an active learning) technique to extract information and give the user to fix them if need be before saving them.
+- You don't have to start from scratch everytime, we're now using local storage to save training samples you decided to save.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Workflow
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+- Insert a laptop description
+- Extract information manually, you only have to do this once as long as you don't clear your local storage.
+- Hit save
+- Repeat, until you have enough samples:
+    - Insert a laptop description
+    - Click on "Train" (the button should've been called: auto-complete)
+    - Wait for response from server, then you'll have some annotation filled for you
+    - Make sure all predicted annotations are correct
+    - Hit save
+- Inference time:
+    - Change the mode to "Inference mode"
+    - Insert a laptop description
+    - Click on "Predict", we will use all saved training samples for prediction
+    - Wait until you see a table with all the predicted laptop info.
